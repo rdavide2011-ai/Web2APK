@@ -1,0 +1,3110 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Web2APK</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg: #f6f7fb;
+      --card: #ffffff;
+      --border: #e5e7ed;
+      --text: #171923;
+      --muted: #747b89;
+      --purple: #6857f5;
+      --purple2: #7c5bea;
+      --purple-soft: #f1efff;
+      --green: #25b871;
+      --green-soft: #effcf5;
+      --editor: #11151b;
+    }
+
+    body {
+      min-height: 100vh;
+      background:
+        radial-gradient(
+          circle at 50% -15%,
+          rgba(104, 87, 245, 0.08),
+          transparent 35%
+        ),
+        var(--bg);
+      color: var(--text);
+      font-family:
+        Inter,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Arial,
+        sans-serif;
+    }
+
+    button,
+    input,
+    select,
+    textarea {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    /* HEADER */
+
+    .header {
+      height: 68px;
+      margin: 0 10px;
+      padding: 0 24px;
+      background: rgba(255, 255, 255, 0.96);
+      border: 1px solid var(--border);
+      border-top: 0;
+      border-radius: 0 0 12px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 3px 18px rgba(20, 25, 40, 0.04);
+      backdrop-filter: blur(18px);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo {
+      width: 35px;
+      height: 35px;
+      border-radius: 10px;
+      background: var(--purple-soft);
+      color: var(--purple);
+      display: grid;
+      place-items: center;
+      font-weight: 900;
+      font-size: 18px;
+    }
+
+    .brand-name {
+      font-size: 24px;
+      font-weight: 800;
+      letter-spacing: -1px;
+    }
+
+    .brand-description {
+      margin-left: 12px;
+      color: #626977;
+      font-size: 13px;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 22px;
+    }
+
+    .header-link {
+      border: 0;
+      background: transparent;
+      color: #303541;
+      font-size: 12px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .header-link:hover {
+      color: var(--purple);
+    }
+
+    .theme-button {
+      width: 35px;
+      height: 35px;
+      border: 0;
+      border-radius: 50%;
+      background: #f2f3f7;
+      color: #303541;
+      font-size: 17px;
+    }
+
+    .pro-button {
+      border: 0;
+      height: 34px;
+      padding: 0 15px;
+      border-radius: 20px;
+      color: white;
+      background: linear-gradient(135deg, #6c58f5, #7d5be9);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .profile-button {
+      width: 35px;
+      height: 35px;
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      background: white;
+      color: #363b46;
+      font-size: 16px;
+    }
+
+    /* MAIN */
+
+    .workspace {
+      width: 100%;
+      max-width: 1535px;
+      margin: 0 auto;
+      padding: 20px;
+      display: grid;
+      grid-template-columns: 340px minmax(480px, 1fr) 345px;
+      gap: 15px;
+      align-items: start;
+    }
+
+    .column {
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    /* CARD */
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 13px;
+      box-shadow: 0 3px 16px rgba(25, 30, 45, 0.035);
+      overflow: hidden;
+    }
+
+    .card-header {
+      min-height: 54px;
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      font-weight: 750;
+      letter-spacing: -0.2px;
+    }
+
+    .number {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--purple);
+      color: white;
+      display: grid;
+      place-items: center;
+      font-size: 10px;
+      font-weight: 800;
+      flex-shrink: 0;
+    }
+
+    .card-body {
+      padding: 0 16px 16px;
+    }
+
+    /* FORM */
+
+    .field {
+      margin-bottom: 14px;
+    }
+
+    .field:last-child {
+      margin-bottom: 0;
+    }
+
+    .field-label {
+      margin-bottom: 7px;
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      font-weight: 650;
+      color: #272c36;
+    }
+
+    .counter {
+      color: #808794;
+      font-weight: 500;
+    }
+
+    .input {
+      width: 100%;
+      height: 34px;
+      padding: 0 10px;
+      border: 1px solid #dfe2e8;
+      border-radius: 7px;
+      outline: none;
+      background: white;
+      color: #242832;
+      font-size: 11px;
+    }
+
+    .input:focus {
+      border-color: #9c90ff;
+      box-shadow: 0 0 0 3px rgba(104, 87, 245, 0.08);
+    }
+
+    .two-fields {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 9px;
+    }
+
+    /* ICON */
+
+    .icon-row {
+      display: grid;
+      grid-template-columns: 1fr 78px;
+      gap: 14px;
+      align-items: center;
+    }
+
+    .icon-drop {
+      height: 116px;
+      border: 1px dashed #ccd1dc;
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      cursor: pointer;
+      transition: 0.2s;
+      background: white;
+    }
+
+    .icon-drop:hover,
+    .icon-drop.drag {
+      border-color: var(--purple);
+      background: #faf9ff;
+    }
+
+    .upload-symbol {
+      font-size: 23px;
+      color: #707887;
+      margin-bottom: 7px;
+    }
+
+    .upload-title {
+      font-size: 10px;
+      color: #697180;
+    }
+
+    .upload-subtitle {
+      margin-top: 4px;
+      font-size: 9px;
+      color: #9aa0ab;
+    }
+
+    .icon-preview-container {
+      text-align: center;
+    }
+
+    .default-icon,
+    .icon-preview {
+      width: 70px;
+      height: 70px;
+      border-radius: 13px;
+      margin: 0 auto 7px;
+    }
+
+    .default-icon {
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, #6d59f5, #795ce9);
+      color: white;
+      font-size: 29px;
+      font-weight: 800;
+    }
+
+    .icon-preview {
+      display: none;
+      object-fit: cover;
+    }
+
+    .remove-icon {
+      border: 0;
+      background: transparent;
+      color: var(--purple);
+      font-size: 10px;
+      font-weight: 600;
+    }
+
+    /* SETTINGS */
+
+    .setting {
+      min-height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .setting-left {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .setting-symbol {
+      width: 16px;
+      color: #687180;
+      font-size: 13px;
+      text-align: center;
+    }
+
+    .setting-name {
+      font-size: 11px;
+      font-weight: 650;
+    }
+
+    .setting-description {
+      margin-top: 3px;
+      font-size: 9.5px;
+      color: #7c8390;
+    }
+
+    .switch {
+      width: 35px;
+      height: 20px;
+      border: 0;
+      border-radius: 20px;
+      background: #e1e4ea;
+      position: relative;
+      flex-shrink: 0;
+      transition: 0.2s;
+    }
+
+    .switch::after {
+      content: "";
+      width: 16px;
+      height: 16px;
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      border-radius: 50%;
+      background: white;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+      transition: 0.2s;
+    }
+
+    .switch.active {
+      background: var(--purple);
+    }
+
+    .switch.active::after {
+      transform: translateX(15px);
+    }
+
+    .orientation {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .orientation-button {
+      height: 34px;
+      border: 1px solid #e0e3ea;
+      border-radius: 7px;
+      background: white;
+      color: #363b46;
+      font-size: 10px;
+      font-weight: 600;
+    }
+
+    .orientation-button.active {
+      border-color: var(--purple);
+      color: var(--purple);
+      background: #faf9ff;
+    }
+
+    .generate-button {
+      width: 100%;
+      height: 48px;
+      margin-top: 14px;
+      border: 0;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #6857f5, #7959e9);
+      color: white;
+      font-size: 13px;
+      font-weight: 750;
+      box-shadow: 0 8px 20px rgba(104, 87, 245, 0.2);
+      transition: 0.2s;
+    }
+
+    .generate-button:hover {
+      transform: translateY(-1px);
+    }
+
+    .generate-button:disabled {
+      opacity: 0.65;
+      cursor: wait;
+      transform: none;
+    }
+
+    /* CODE */
+
+    .toolbar {
+      padding: 0 16px 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .tabs {
+      display: flex;
+      border: 1px solid #e0e2e9;
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    .tab,
+    .tool-button {
+      height: 30px;
+      border: 0;
+      background: white;
+      color: #444a56;
+      font-size: 10px;
+      font-weight: 600;
+    }
+
+    .tab {
+      padding: 0 14px;
+      border-right: 1px solid #e0e2e9;
+    }
+
+    .tab:last-child {
+      border-right: 0;
+    }
+
+    .tab.active {
+      background: #f1efff;
+      color: var(--purple);
+    }
+
+    .tools {
+      display: flex;
+      gap: 6px;
+    }
+
+    .tool-button {
+      padding: 0 10px;
+      border: 1px solid #e0e3e9;
+      border-radius: 6px;
+    }
+
+    .tool-button:hover {
+      background: #fafaff;
+      border-color: #c8cce0;
+    }
+
+    .editor-container {
+      height: 430px;
+      margin: 0 16px 13px;
+      position: relative;
+      border-radius: 7px;
+      overflow: hidden;
+      border: 1px solid #272c35;
+      background: var(--editor);
+    }
+
+    #htmlEditor {
+      width: 100%;
+      height: 100%;
+      border: 0;
+      outline: 0;
+      resize: none;
+      padding: 15px 15px 40px 48px;
+      background:
+        linear-gradient(
+          90deg,
+          #0e1218 0,
+          #0e1218 37px,
+          #11151b 37px
+        );
+      color: #e4e7ec;
+      font-family: Consolas, Monaco, monospace;
+      font-size: 11px;
+      line-height: 1.55;
+      white-space: pre;
+      tab-size: 2;
+    }
+
+    .editor-status {
+      position: absolute;
+      right: 13px;
+      bottom: 10px;
+      color: #9097a4;
+      font-size: 9px;
+      pointer-events: none;
+    }
+
+    .status-dot {
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      margin-right: 4px;
+      border-radius: 50%;
+      background: #43d681;
+    }
+
+    /* CONSOLE */
+
+    .console {
+      height: 237px;
+      margin: 0 16px 14px;
+      background: #11151b;
+      border: 1px solid #272c35;
+      border-radius: 7px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .console-output {
+      flex: 1;
+      padding: 14px;
+      overflow-y: auto;
+      font-family: Consolas, Monaco, monospace;
+      font-size: 10.5px;
+      line-height: 1.65;
+    }
+
+    .console-line {
+      white-space: pre-wrap;
+    }
+
+    .console-muted {
+      color: #7c8491;
+    }
+
+    .console-info {
+      color: #66a8ff;
+    }
+
+    .console-ok {
+      color: #52dc8b;
+    }
+
+    .console-error {
+      color: #ff737d;
+    }
+
+    .console-time {
+      color: #6f7784;
+    }
+
+    .console-progress {
+      padding: 0 14px 14px;
+    }
+
+    .progress-bar {
+      height: 7px;
+      border-radius: 20px;
+      overflow: hidden;
+      background: #292e38;
+    }
+
+    .progress-fill {
+      width: 0;
+      height: 100%;
+      border-radius: 20px;
+      background: linear-gradient(90deg, #6957f5, #8c62ee);
+      transition: width 0.3s;
+    }
+
+    .progress-value {
+      display: block;
+      margin-top: 4px;
+      color: #52d88a;
+      text-align: right;
+      font-family: Consolas, monospace;
+      font-size: 10px;
+      font-weight: 700;
+    }
+
+    /* SUCCESS */
+
+    .success-card {
+      display: none;
+      margin: 0 16px 16px;
+      padding: 12px 14px;
+      border: 1px solid #c8efd9;
+      border-radius: 7px;
+      background: var(--green-soft);
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .success-title {
+      color: #1c8b58;
+      font-size: 13px;
+      font-weight: 750;
+    }
+
+    .success-text {
+      margin-top: 3px;
+      color: #60806e;
+      font-size: 10px;
+    }
+
+    .download-button {
+      height: 35px;
+      padding: 0 15px;
+      border: 0;
+      border-radius: 7px;
+      background: linear-gradient(135deg, #6a57f5, #7659e8);
+      color: white;
+      font-size: 10px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    /* PREVIEW */
+
+    .preview-card {
+      min-height: 770px;
+    }
+
+    .device-tabs {
+      display: flex;
+      gap: 5px;
+    }
+
+    .device-tab {
+      width: 35px;
+      height: 30px;
+      border: 0;
+      border-radius: 6px;
+      background: #f1f2f6;
+      color: #707785;
+      font-size: 14px;
+    }
+
+    .device-tab.active {
+      color: var(--purple);
+      background: #f4f2ff;
+      border: 1px solid #b9b0ff;
+    }
+
+    .preview-area {
+      min-height: 650px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 15px 10px 20px;
+      background:
+        radial-gradient(
+          circle at 50% 50%,
+          rgba(104, 87, 245, 0.055),
+          transparent 45%
+        );
+    }
+
+    .phone {
+      width: 287px;
+      height: 585px;
+      padding: 8px;
+      border-radius: 39px;
+      background: #050608;
+      box-shadow:
+        0 25px 45px rgba(27, 30, 39, 0.22),
+        inset 0 0 0 1px #3c4048;
+      position: relative;
+      transition: 0.3s;
+    }
+
+    .phone.landscape {
+      width: 585px;
+      height: 287px;
+      max-width: 95%;
+      border-radius: 31px;
+    }
+
+    .phone-screen {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      border-radius: 31px;
+      background: white;
+      position: relative;
+    }
+
+    .phone-notch {
+      position: absolute;
+      z-index: 5;
+      top: 8px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 92px;
+      height: 25px;
+      border-radius: 0 0 16px 16px;
+      background: #050608;
+    }
+
+    .phone.landscape .phone-notch {
+      left: 8px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 25px;
+      height: 92px;
+      border-radius: 0 16px 16px 0;
+    }
+
+    .phone-status {
+      position: absolute;
+      z-index: 6;
+      top: 13px;
+      left: 17px;
+      right: 17px;
+      color: white;
+      font-size: 8px;
+      display: flex;
+      justify-content: space-between;
+      pointer-events: none;
+    }
+
+    .preview-frame {
+      width: 100%;
+      height: 100%;
+      border: 0;
+      background: white;
+    }
+
+    .suggestion {
+      margin: 0 16px 16px;
+      padding: 13px;
+      border: 1px solid #e2e5ec;
+      border-radius: 7px;
+      background: white;
+    }
+
+    .suggestion-title {
+      color: #454b56;
+      font-size: 10px;
+      font-weight: 700;
+    }
+
+    .suggestion-text {
+      margin-top: 6px;
+      color: #7c8390;
+      font-size: 9px;
+      line-height: 1.45;
+    }
+
+    /* RESPONSIVE */
+
+    @media (max-width: 1250px) {
+      .workspace {
+        grid-template-columns: 300px minmax(430px, 1fr);
+      }
+
+      .preview-column {
+        grid-column: 1 / -1;
+      }
+    }
+
+    @media (max-width: 850px) {
+      .workspace {
+        grid-template-columns: 1fr;
+      }
+
+      .preview-column {
+        grid-column: auto;
+      }
+
+      .brand-description,
+      .header-link {
+        display: none;
+      }
+
+      .header-right {
+        gap: 8px;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .header {
+        padding: 0 14px;
+      }
+
+      .brand-name {
+        font-size: 20px;
+      }
+
+      .workspace {
+        padding: 12px;
+      }
+
+      .two-fields {
+        grid-template-columns: 1fr;
+      }
+
+      .toolbar {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .tools {
+        justify-content: flex-end;
+      }
+
+      .phone {
+        transform: scale(0.82);
+        margin: -50px 0;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- HEADER -->
+
+  <header class="header">
+
+    <div class="brand">
+
+      <div class="logo">⚡</div>
+
+      <div class="brand-name">
+        Web2APK
+      </div>
+
+      <div class="brand-description">
+        Trasforma il tuo sito web in app Android
+      </div>
+
+    </div>
+
+
+    <div class="header-right">
+
+      <button
+        class="header-link"
+        id="documentationButton"
+      >
+        ▣ Documentazione
+      </button>
+
+      <button
+        class="header-link"
+        id="guideButton"
+      >
+        ? Guida
+      </button>
+
+      <button
+        class="theme-button"
+        id="themeButton"
+      >
+        ☼
+      </button>
+
+      <button class="pro-button">
+        ♔ Pro
+      </button>
+
+      <button class="profile-button">
+        ♙
+      </button>
+
+    </div>
+
+  </header>
+
+
+  <!-- WORKSPACE -->
+
+  <main class="workspace">
+
+
+    <!-- LEFT COLUMN -->
+
+    <div class="column">
+
+
+      <!-- PROJECT -->
+
+      <section class="card">
+
+        <div class="card-header">
+
+          <div class="section-title">
+
+            <span class="number">
+              1
+            </span>
+
+            Progetto
+
+          </div>
+
+        </div>
+
+
+        <div class="card-body">
+
+
+          <div class="field">
+
+            <div class="field-label">
+
+              <span>
+                Nome applicazione
+              </span>
+
+              <span
+                class="counter"
+                id="nameCounter"
+              >
+                10/30
+              </span>
+
+            </div>
+
+            <input
+              class="input"
+              id="appName"
+              type="text"
+              maxlength="30"
+              value="La mia app"
+            >
+
+          </div>
+
+
+          <div class="field">
+
+            <div class="field-label">
+              Package name
+            </div>
+
+            <input
+              class="input"
+              id="packageName"
+              type="text"
+              value="com.web2apk.miaapp"
+            >
+
+          </div>
+
+
+          <div class="two-fields">
+
+            <div class="field">
+
+              <div class="field-label">
+                Versione
+              </div>
+
+              <input
+                class="input"
+                id="version"
+                type="text"
+                value="1.0.0"
+              >
+
+            </div>
+
+
+            <div class="field">
+
+              <div class="field-label">
+                Codice versione
+              </div>
+
+              <input
+                class="input"
+                id="versionCode"
+                type="number"
+                value="1"
+              >
+
+            </div>
+
+          </div>
+
+
+          <div class="field">
+
+            <div class="field-label">
+              Icona applicazione
+            </div>
+
+
+            <div class="icon-row">
+
+              <label
+                class="icon-drop"
+                id="iconDrop"
+              >
+
+                <div>
+
+                  <div class="upload-symbol">
+                    ▧
+                  </div>
+
+                  <div class="upload-title">
+                    Trascina o clicca per caricare
+                  </div>
+
+                  <div class="upload-subtitle">
+                    PNG · 512×512 consigliato
+                  </div>
+
+                </div>
+
+
+                <input
+                  type="file"
+                  id="iconInput"
+                  accept="image/png,image/jpeg,image/webp"
+                  hidden
+                >
+
+              </label>
+
+
+              <div class="icon-preview-container">
+
+                <div
+                  class="default-icon"
+                  id="defaultIcon"
+                >
+                  W
+                </div>
+
+                <img
+                  class="icon-preview"
+                  id="iconPreview"
+                  alt="Icona applicazione"
+                >
+
+                <button
+                  class="remove-icon"
+                  id="removeIcon"
+                  type="button"
+                >
+                  Rimuovi
+                </button>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <!-- SETTINGS -->
+
+      <section class="card">
+
+        <div class="card-header">
+
+          <div class="section-title">
+
+            <span class="number">
+              2
+            </span>
+
+            Impostazioni
+
+          </div>
+
+        </div>
+
+
+        <div class="card-body">
+
+
+          <div class="setting">
+
+            <div class="setting-left">
+
+              <div class="setting-symbol">
+                ◉
+              </div>
+
+              <div>
+
+                <div class="setting-name">
+                  Accesso a Internet
+                </div>
+
+                <div class="setting-description">
+                  Permette all'app di utilizzare Internet
+                </div>
+
+              </div>
+
+            </div>
+
+            <button
+              class="switch active"
+              data-setting="internet"
+              type="button"
+            ></button>
+
+          </div>
+
+
+          <div class="setting">
+
+            <div class="setting-left">
+
+              <div class="setting-symbol">
+                ◌
+              </div>
+
+              <div>
+
+                <div class="setting-name">
+                  JavaScript
+                </div>
+
+                <div class="setting-description">
+                  Abilita JavaScript nella WebView
+                </div>
+
+              </div>
+
+            </div>
+
+            <button
+              class="switch active"
+              data-setting="javascript"
+              type="button"
+            ></button>
+
+          </div>
+
+
+          <div class="setting">
+
+            <div class="setting-left">
+
+              <div class="setting-symbol">
+                #
+              </div>
+
+              <div>
+
+                <div class="setting-name">
+                  Schermo intero
+                </div>
+
+                <div class="setting-description">
+                  Nasconde la barra di stato
+                </div>
+
+              </div>
+
+            </div>
+
+            <button
+              class="switch"
+              data-setting="fullscreen"
+              type="button"
+            ></button>
+
+          </div>
+
+
+          <div class="setting">
+
+            <div class="setting-left">
+
+              <div class="setting-symbol">
+                ↗
+              </div>
+
+              <div>
+
+                <div class="setting-name">
+                  Link esterni
+                </div>
+
+                <div class="setting-description">
+                  Apri i link esterni nel browser
+                </div>
+
+              </div>
+
+            </div>
+
+            <button
+              class="switch active"
+              data-setting="external"
+              type="button"
+            ></button>
+
+          </div>
+
+
+          <div class="setting">
+
+            <div class="setting-left">
+
+              <div class="setting-symbol">
+                ◷
+              </div>
+
+              <div>
+
+                <div class="setting-name">
+                  Mantieni schermo acceso
+                </div>
+
+                <div class="setting-description">
+                  Evita che lo schermo si spenga
+                </div>
+
+              </div>
+
+            </div>
+
+            <button
+              class="switch"
+              data-setting="keepScreen"
+              type="button"
+            ></button>
+
+          </div>
+
+
+          <div
+            class="field"
+            style="margin-top: 12px;"
+          >
+
+            <div class="field-label">
+              Orientamento
+            </div>
+
+
+            <div class="orientation">
+
+              <button
+                class="orientation-button active"
+                data-orientation="portrait"
+                type="button"
+              >
+                Verticale
+              </button>
+
+              <button
+                class="orientation-button"
+                data-orientation="landscape"
+                type="button"
+              >
+                Orizzontale
+              </button>
+
+            </div>
+
+          </div>
+
+
+          <div class="field">
+
+            <div class="field-label">
+              Tema
+            </div>
+
+            <select
+              class="input"
+              id="themeSelect"
+            >
+
+              <option value="system">
+                Predefinito (Sistema)
+              </option>
+
+              <option value="light">
+                Chiaro
+              </option>
+
+              <option value="dark">
+                Scuro
+              </option>
+
+            </select>
+
+          </div>
+
+
+          <button
+            class="generate-button"
+            id="generateButton"
+            type="button"
+          >
+            🚀 &nbsp; GENERA APK
+          </button>
+
+        </div>
+
+      </section>
+
+    </div>
+
+
+    <!-- CENTER COLUMN -->
+
+    <div class="column">
+
+
+      <!-- HTML -->
+
+      <section class="card">
+
+        <div class="card-header">
+
+          <div class="section-title">
+
+            <span class="number">
+              3
+            </span>
+
+            Codice HTML
+
+          </div>
+
+        </div>
+
+
+        <div class="toolbar">
+
+
+          <div class="tabs">
+
+            <button
+              class="tab active"
+              id="editorTab"
+              type="button"
+            >
+              ◉ Editor
+            </button>
+
+            <button
+              class="tab"
+              id="fileTab"
+              type="button"
+            >
+              Carica file
+            </button>
+
+            <button
+              class="tab"
+              id="urlTab"
+              type="button"
+            >
+              Incolla URL
+            </button>
+
+          </div>
+
+
+          <div class="tools">
+
+            <button
+              class="tool-button"
+              id="clearCode"
+              type="button"
+            >
+              ♧ Pulisci
+            </button>
+
+            <button
+              class="tool-button"
+              id="formatCode"
+              type="button"
+            >
+              ☷ Formato
+            </button>
+
+            <button
+              class="tool-button"
+              id="exampleCode"
+              type="button"
+            >
+              ◉ Esempio
+            </button>
+
+          </div>
+
+        </div>
+
+
+        <div class="editor-container">
+
+          <textarea
+            id="htmlEditor"
+            spellcheck="false"
+          >&lt;!DOCTYPE html&gt;
+&lt;html lang="it"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+
+  &lt;meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  &gt;
+
+  &lt;title&gt;La mia app&lt;/title&gt;
+
+  &lt;style&gt;
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      font-family: Arial, sans-serif;
+
+      color: white;
+      text-align: center;
+
+      background:
+        linear-gradient(
+          135deg,
+          #667eea,
+          #764ba2
+        );
+
+      padding: 30px 20px;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+    }
+
+    p {
+      opacity: 0.9;
+      font-size: 1.1rem;
+    }
+  &lt;/style&gt;
+
+&lt;/head&gt;
+
+&lt;body&gt;
+
+  &lt;main&gt;
+
+    &lt;h1&gt;
+      🚀 La mia app
+    &lt;/h1&gt;
+
+    &lt;p&gt;
+      Questa è la mia applicazione web
+      trasformata in Android!
+    &lt;/p&gt;
+
+  &lt;/main&gt;
+
+&lt;/body&gt;
+&lt;/html&gt;</textarea>
+
+
+          <div class="editor-status">
+
+            <span class="status-dot"></span>
+
+            Auto-salvato
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <!-- CONSOLE -->
+
+      <section class="card">
+
+        <div class="card-header">
+
+          <div class="section-title">
+
+            <span class="number">
+              4
+            </span>
+
+            Console di compilazione
+
+          </div>
+
+
+          <div class="tools">
+
+            <button
+              class="tool-button"
+              id="clearConsole"
+              type="button"
+            >
+              ♧ Pulisci console
+            </button>
+
+            <button
+              class="tool-button"
+              id="saveLog"
+              type="button"
+            >
+              ↓ Salva log
+            </button>
+
+          </div>
+
+        </div>
+
+
+        <div class="console">
+
+          <div
+            class="console-output"
+            id="consoleOutput"
+          >
+
+            <div class="console-line console-muted">
+              [12:45:10] Console pronta.
+            </div>
+
+            <div class="console-line console-muted">
+              [12:45:10] In attesa di una compilazione...
+            </div>
+
+          </div>
+
+
+          <div
+            class="console-progress"
+            id="consoleProgress"
+            style="display: none;"
+          >
+
+            <div class="progress-bar">
+
+              <div
+                class="progress-fill"
+                id="progressFill"
+              ></div>
+
+            </div>
+
+            <span
+              class="progress-value"
+              id="progressValue"
+            >
+              0%
+            </span>
+
+          </div>
+
+        </div>
+
+
+        <div
+          class="success-card"
+          id="successCard"
+        >
+
+          <div>
+
+            <div class="success-title">
+              🎉 Compilazione completata!
+            </div>
+
+            <div class="success-text">
+              Il tuo APK è pronto per essere scaricato.
+            </div>
+
+          </div>
+
+
+          <button
+            class="download-button"
+            id="downloadButton"
+            type="button"
+          >
+            ↓ &nbsp;Scarica APK
+          </button>
+
+        </div>
+
+      </section>
+
+    </div>
+
+
+    <!-- PREVIEW -->
+
+    <div class="column preview-column">
+
+      <section class="card preview-card">
+
+        <div class="card-header">
+
+          <div class="section-title">
+
+            <span class="number">
+              5
+            </span>
+
+            Anteprima
+
+          </div>
+
+
+          <div class="device-tabs">
+
+            <button
+              class="device-tab active"
+              data-device="phone"
+              type="button"
+              title="Telefono"
+            >
+              ▯
+            </button>
+
+            <button
+              class="device-tab"
+              data-device="tablet"
+              type="button"
+              title="Tablet"
+            >
+              ▣
+            </button>
+
+            <button
+              class="device-tab"
+              data-device="desktop"
+              type="button"
+              title="Desktop"
+            >
+              ▭
+            </button>
+
+          </div>
+
+        </div>
+
+
+        <div class="preview-area">
+
+          <div
+            class="phone"
+            id="phone"
+          >
+
+            <div class="phone-screen">
+
+              <div class="phone-notch"></div>
+
+              <div class="phone-status">
+
+                <span>
+                  12:30
+                </span>
+
+                <span>
+                  ● ◔ ▰
+                </span>
+
+              </div>
+
+
+              <iframe
+                class="preview-frame"
+                id="previewFrame"
+                title="Anteprima applicazione"
+                sandbox="allow-scripts allow-forms allow-modals allow-popups"
+              ></iframe>
+
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <div class="suggestion">
+
+          <div class="suggestion-title">
+            💡 Suggerimento
+          </div>
+
+          <div class="suggestion-text">
+            L'anteprima potrebbe differire leggermente
+            dall'app reale sul dispositivo.
+          </div>
+
+        </div>
+
+      </section>
+
+    </div>
+
+  </main>
+
+
+  <input
+    type="file"
+    id="htmlFileInput"
+    accept=".html,.htm"
+    hidden
+  >
+
+
+  <script>
+    "use strict";
+
+
+    /* ================================
+       ELEMENTI
+    ================================= */
+
+    const htmlEditor =
+      document.getElementById("htmlEditor");
+
+    const previewFrame =
+      document.getElementById("previewFrame");
+
+    const appName =
+      document.getElementById("appName");
+
+    const nameCounter =
+      document.getElementById("nameCounter");
+
+    const iconInput =
+      document.getElementById("iconInput");
+
+    const iconDrop =
+      document.getElementById("iconDrop");
+
+    const iconPreview =
+      document.getElementById("iconPreview");
+
+    const defaultIcon =
+      document.getElementById("defaultIcon");
+
+    const removeIcon =
+      document.getElementById("removeIcon");
+
+    const phone =
+      document.getElementById("phone");
+
+    const generateButton =
+      document.getElementById("generateButton");
+
+    const consoleOutput =
+      document.getElementById("consoleOutput");
+
+    const consoleProgress =
+      document.getElementById("consoleProgress");
+
+    const progressFill =
+      document.getElementById("progressFill");
+
+    const progressValue =
+      document.getElementById("progressValue");
+
+    const successCard =
+      document.getElementById("successCard");
+
+    const downloadButton =
+      document.getElementById("downloadButton");
+
+    const htmlFileInput =
+      document.getElementById("htmlFileInput");
+
+    let generatedFileUrl = null;
+
+    let previewTimer = null;
+
+
+    /* ================================
+       PREVIEW
+    ================================= */
+
+    function updatePreview() {
+
+      const html =
+        htmlEditor.value;
+
+      const blob =
+        new Blob(
+          [html],
+          {
+            type: "text/html"
+          }
+        );
+
+      const url =
+        URL.createObjectURL(blob);
+
+      previewFrame.src = url;
+
+      setTimeout(
+        function() {
+          URL.revokeObjectURL(url);
+        },
+        5000
+      );
+
+    }
+
+
+    updatePreview();
+
+
+    /* ================================
+       AUTO PREVIEW
+    ================================= */
+
+    htmlEditor.addEventListener(
+      "input",
+      function() {
+
+        clearTimeout(
+          previewTimer
+        );
+
+        previewTimer =
+          setTimeout(
+            updatePreview,
+            350
+          );
+
+      }
+    );
+
+
+    /* ================================
+       NOME APP
+    ================================= */
+
+    function updateNameCounter() {
+
+      nameCounter.textContent =
+        appName.value.length + "/30";
+
+    }
+
+
+    appName.addEventListener(
+      "input",
+      updateNameCounter
+    );
+
+
+    updateNameCounter();
+
+
+    /* ================================
+       SWITCH
+    ================================= */
+
+    document
+      .querySelectorAll(".switch")
+      .forEach(
+        function(button) {
+
+          button.addEventListener(
+            "click",
+            function() {
+
+              button.classList.toggle(
+                "active"
+              );
+
+            }
+          );
+
+        }
+      );
+
+
+    /* ================================
+       ORIENTAMENTO
+    ================================= */
+
+    document
+      .querySelectorAll(".orientation-button")
+      .forEach(
+        function(button) {
+
+          button.addEventListener(
+            "click",
+            function() {
+
+              document
+                .querySelectorAll(
+                  ".orientation-button"
+                )
+                .forEach(
+                  function(btn) {
+                    btn.classList.remove(
+                      "active"
+                    );
+                  }
+                );
+
+              button.classList.add(
+                "active"
+              );
+
+              if (
+                button.dataset.orientation ===
+                "landscape"
+              ) {
+
+                phone.classList.add(
+                  "landscape"
+                );
+
+              } else {
+
+                phone.classList.remove(
+                  "landscape"
+                );
+
+              }
+
+            }
+          );
+
+        }
+      );
+
+
+    /* ================================
+       ICONA
+    ================================= */
+
+    iconInput.addEventListener(
+      "change",
+      function(event) {
+
+        const file =
+          event.target.files[0];
+
+        if (file) {
+          loadIcon(file);
+        }
+
+      }
+    );
+
+
+    iconDrop.addEventListener(
+      "dragover",
+      function(event) {
+
+        event.preventDefault();
+
+        iconDrop.classList.add(
+          "drag"
+        );
+
+      }
+    );
+
+
+    iconDrop.addEventListener(
+      "dragleave",
+      function() {
+
+        iconDrop.classList.remove(
+          "drag"
+        );
+
+      }
+    );
+
+
+    iconDrop.addEventListener(
+      "drop",
+      function(event) {
+
+        event.preventDefault();
+
+        iconDrop.classList.remove(
+          "drag"
+        );
+
+        const file =
+          event.dataTransfer.files[0];
+
+        if (file) {
+          loadIcon(file);
+        }
+
+      }
+    );
+
+
+    function loadIcon(file) {
+
+      if (
+        !file.type.startsWith(
+          "image/"
+        )
+      ) {
+        return;
+      }
+
+      const reader =
+        new FileReader();
+
+      reader.onload =
+        function(event) {
+
+          iconPreview.src =
+            event.target.result;
+
+          iconPreview.style.display =
+            "block";
+
+          defaultIcon.style.display =
+            "none";
+
+        };
+
+      reader.readAsDataURL(
+        file
+      );
+
+    }
+
+
+    removeIcon.addEventListener(
+      "click",
+      function() {
+
+        iconPreview.src = "";
+
+        iconPreview.style.display =
+          "none";
+
+        defaultIcon.style.display =
+          "grid";
+
+        iconInput.value = "";
+
+      }
+    );
+
+
+    /* ================================
+       FILE HTML
+    ================================= */
+
+    document
+      .getElementById("fileTab")
+      .addEventListener(
+        "click",
+        function() {
+
+          htmlFileInput.click();
+
+        }
+      );
+
+
+    htmlFileInput.addEventListener(
+      "change",
+      async function(event) {
+
+        const file =
+          event.target.files[0];
+
+        if (!file) {
+          return;
+        }
+
+        const content =
+          await file.text();
+
+        htmlEditor.value =
+          content;
+
+        updatePreview();
+
+        addConsoleLine(
+          "✓ File HTML caricato: " +
+          file.name,
+          "console-ok"
+        );
+
+      }
+    );
+
+
+    /* ================================
+       URL
+    ================================= */
+
+    document
+      .getElementById("urlTab")
+      .addEventListener(
+        "click",
+        function() {
+
+          const url =
+            prompt(
+              "Inserisci l'URL del sito:"
+            );
+
+          if (!url) {
+            return;
+          }
+
+          try {
+
+            new URL(url);
+
+            addConsoleLine(
+              "› URL inserito: " +
+              url,
+              "console-info"
+            );
+
+          } catch {
+
+            addConsoleLine(
+              "✗ URL non valido.",
+              "console-error"
+            );
+
+          }
+
+        }
+      );
+
+
+    /* ================================
+       PULISCI CODICE
+    ================================= */
+
+    document
+      .getElementById("clearCode")
+      .addEventListener(
+        "click",
+        function() {
+
+          htmlEditor.value =
+            "";
+
+          updatePreview();
+
+        }
+      );
+
+
+    /* ================================
+       ESEMPIO
+    ================================= */
+
+    document
+      .getElementById("exampleCode")
+      .addEventListener(
+        "click",
+        function() {
+
+          htmlEditor.value =
+            [
+              '<!DOCTYPE html>',
+              '<html lang="it">',
+              '<head>',
+              '  <meta charset="UTF-8">',
+              '',
+              '  <meta',
+              '    name="viewport"',
+              '    content="width=device-width, initial-scale=1.0"',
+              '  >',
+              '',
+              '  <title>La mia app</title>',
+              '',
+              '  <style>',
+              '    body {',
+              '      margin: 0;',
+              '      min-height: 100vh;',
+              '      display: flex;',
+              '      align-items: center;',
+              '      justify-content: center;',
+              '      font-family: Arial, sans-serif;',
+              '      background: linear-gradient(135deg, #667eea, #764ba2);',
+              '      color: white;',
+              '      text-align: center;',
+              '      padding: 25px;',
+              '    }',
+              '',
+              '    h1 {',
+              '      font-size: 40px;',
+              '      margin-bottom: 12px;',
+              '    }',
+              '',
+              '    p {',
+              '      opacity: 0.9;',
+              '      line-height: 1.6;',
+              '    }',
+              '',
+              '    button {',
+              '      margin-top: 20px;',
+              '      padding: 13px 22px;',
+              '      border: 0;',
+              '      border-radius: 10px;',
+              '      background: white;',
+              '      color: #6655e8;',
+              '      font-weight: bold;',
+              '      cursor: pointer;',
+              '    }',
+              '  </style>',
+              '</head>',
+              '',
+              '<body>',
+              '',
+              '  <div>',
+              '',
+              '    <h1>',
+              '      🚀 Web2APK',
+              '    </h1>',
+              '',
+              '    <p>',
+              '      Questa pagina può essere',
+              '      trasformata in un\'app Android.',
+              '    </p>',
+              '',
+              '    <button',
+              '      onclick="alert(\'Funziona!\')"',
+              '    >',
+              '      Testa app',
+              '    </button>',
+              '',
+              '  </div>',
+              '',
+              '</body>',
+              '</html>'
+            ].join('\n');
+
+          updatePreview();
+
+        }
+      );
+
+
+    /* ================================
+       FORMATTA
+    ================================= */
+
+    document
+      .getElementById("formatCode")
+      .addEventListener(
+        "click",
+        function() {
+
+          let html =
+            htmlEditor.value;
+
+          html =
+            html.replace(
+              /></g,
+              ">\n<"
+            );
+
+          html =
+            html.replace(
+              /\n{2,}/g,
+              "\n"
+            );
+
+          htmlEditor.value =
+            html.trim();
+
+          updatePreview();
+
+        }
+      );
+
+
+    /* ================================
+       CONSOLE
+    ================================= */
+
+    function getTime() {
+
+      return new Date()
+        .toLocaleTimeString(
+          "it-IT",
+          {
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit"
+          }
+        );
+
+    }
+
+
+    function escapeHtml(text) {
+
+      const div =
+        document.createElement(
+          "div"
+        );
+
+      div.textContent =
+        text;
+
+      return div.innerHTML;
+
+    }
+
+
+    function addConsoleLine(
+      text,
+      className
+    ) {
+
+      const line =
+        document.createElement(
+          "div"
+        );
+
+      line.className =
+        "console-line " +
+        (className || "");
+
+      line.innerHTML =
+        '<span class="console-time">[' +
+        getTime() +
+        ']</span> ' +
+        escapeHtml(text);
+
+      consoleOutput.appendChild(
+        line
+      );
+
+      consoleOutput.scrollTop =
+        consoleOutput.scrollHeight;
+
+    }
+
+
+    /* ================================
+       CLEAR CONSOLE
+    ================================= */
+
+    document
+      .getElementById("clearConsole")
+      .addEventListener(
+        "click",
+        function() {
+
+          consoleOutput.innerHTML =
+            "";
+
+          addConsoleLine(
+            "Console pulita.",
+            "console-muted"
+          );
+
+        }
+      );
+
+
+    /* ================================
+       BUILD STEPS
+    ================================= */
+
+    const buildSteps = [
+
+      [
+        "Avvio compilazione...",
+        5,
+        "console-info"
+      ],
+
+      [
+        "Verifica progetto",
+        12,
+        "console-ok"
+      ],
+
+      [
+        "Creazione struttura Android",
+        22,
+        "console-ok"
+      ],
+
+      [
+        "Copia file web",
+        31,
+        "console-ok"
+      ],
+
+      [
+        "Configurazione WebView",
+        42,
+        "console-ok"
+      ],
+
+      [
+        "Generazione AndroidManifest.xml",
+        51,
+        "console-ok"
+      ],
+
+      [
+        "Compilazione risorse",
+        62,
+        "console-ok"
+      ],
+
+      [
+        "Build Gradle",
+        74,
+        "console-info"
+      ],
+
+      [
+        "D8/R8 processing",
+        84,
+        "console-info"
+      ],
+
+      [
+        "Packaging APK",
+        94,
+        "console-info"
+      ],
+
+      [
+        "APK generato con successo!",
+        100,
+        "console-ok"
+      ]
+
+    ];
+
+
+    function wait(ms) {
+
+      return new Promise(
+        function(resolve) {
+          setTimeout(
+            resolve,
+            ms
+          );
+        }
+      );
+
+    }
+
+
+    /* ================================
+       GENERAZIONE
+    ================================= */
+
+    async function generateAPK() {
+
+      if (
+        !htmlEditor.value.trim()
+      ) {
+
+        addConsoleLine(
+          "✗ Il codice HTML è vuoto.",
+          "console-error"
+        );
+
+        return;
+
+      }
+
+
+      generateButton.disabled =
+        true;
+
+      generateButton.innerHTML =
+        "⏳ &nbsp; COMPILAZIONE...";
+
+
+      successCard.style.display =
+        "none";
+
+
+      consoleProgress.style.display =
+        "block";
+
+
+      consoleOutput.innerHTML =
+        "";
+
+
+      progressFill.style.width =
+        "0%";
+
+
+      progressValue.textContent =
+        "0%";
+
+
+      addConsoleLine(
+        "Preparazione progetto Web2APK...",
+        "console-muted"
+      );
+
+
+      await wait(400);
+
+
+      for (
+        const step of buildSteps
+      ) {
+
+        addConsoleLine(
+          "✓ " + step[0],
+          step[2]
+        );
+
+
+        progressFill.style.width =
+          step[1] + "%";
+
+
+        progressValue.textContent =
+          step[1] + "%";
+
+
+        await wait(
+          300 +
+          Math.random() * 350
+        );
+
+      }
+
+
+      addConsoleLine(
+        "BUILD SUCCESSFUL",
+        "console-ok"
+      );
+
+
+      await wait(500);
+
+
+      createDemoAPK();
+
+
+      successCard.style.display =
+        "flex";
+
+
+      generateButton.disabled =
+        false;
+
+
+      generateButton.innerHTML =
+        "🚀 &nbsp; GENERA APK";
+
+    }
+
+
+    /* ================================
+       DEMO APK
+    ================================= */
+
+    function createDemoAPK() {
+
+      const data = {
+
+        appName:
+          appName.value,
+
+        packageName:
+          document
+            .getElementById(
+              "packageName"
+            )
+            .value,
+
+        version:
+          document
+            .getElementById(
+              "version"
+            )
+            .value,
+
+        versionCode:
+          document
+            .getElementById(
+              "versionCode"
+            )
+            .value,
+
+        orientation:
+          document
+            .querySelector(
+              ".orientation-button.active"
+            )
+            .dataset.orientation,
+
+        html:
+          htmlEditor.value
+
+      };
+
+
+      const blob =
+        new Blob(
+          [
+            "WEB2APK DEMO\n\n",
+            JSON.stringify(
+              data,
+              null,
+              2
+            )
+          ],
+          {
+            type:
+              "application/vnd.android.package-archive"
+          }
+        );
+
+
+      generatedFileUrl =
+        URL.createObjectURL(
+          blob
+        );
+
+    }
+
+
+    /* ================================
+       DOWNLOAD
+    ================================= */
+
+    downloadButton.addEventListener(
+      "click",
+      function() {
+
+        if (
+          !generatedFileUrl
+        ) {
+          return;
+        }
+
+
+        const name =
+          appName.value
+            .trim()
+            .replace(
+              /[^a-zA-Z0-9_-]/g,
+              "_"
+            ) ||
+          "Web2APK";
+
+
+        const version =
+          document
+            .getElementById(
+              "version"
+            )
+            .value
+            .trim() ||
+          "1.0.0";
+
+
+        const link =
+          document.createElement(
+            "a"
+          );
+
+
+        link.href =
+          generatedFileUrl;
+
+
+        link.download =
+          name +
+          "-" +
+          version +
+          ".apk";
+
+
+        document.body.appendChild(
+          link
+        );
+
+
+        link.click();
+
+
+        link.remove();
+
+      }
+    );
+
+
+    /* ================================
+       GENERATE BUTTON
+    ================================= */
+
+    generateButton.addEventListener(
+      "click",
+      generateAPK
+    );
+
+
+    /* ================================
+       SAVE LOG
+    ================================= */
+
+    document
+      .getElementById("saveLog")
+      .addEventListener(
+        "click",
+        function() {
+
+          const log =
+            consoleOutput.innerText;
+
+
+          const blob =
+            new Blob(
+              [log],
+              {
+                type:
+                  "text/plain"
+              }
+            );
+
+
+          const url =
+            URL.createObjectURL(
+              blob
+            );
+
+
+          const link =
+            document.createElement(
+              "a"
+            );
+
+
+          link.href =
+            url;
+
+
+          link.download =
+            "web2apk-build.log";
+
+
+          document.body.appendChild(
+            link
+          );
+
+
+          link.click();
+
+
+          link.remove();
+
+
+          URL.revokeObjectURL(
+            url
+          );
+
+        }
+      );
+
+
+    /* ================================
+       DEVICE PREVIEW
+    ================================= */
+
+    document
+      .querySelectorAll(
+        ".device-tab"
+      )
+      .forEach(
+        function(button) {
+
+          button.addEventListener(
+            "click",
+            function() {
+
+              document
+                .querySelectorAll(
+                  ".device-tab"
+                )
+                .forEach(
+                  function(btn) {
+
+                    btn.classList.remove(
+                      "active"
+                    );
+
+                  }
+                );
+
+
+              button.classList.add(
+                "active"
+              );
+
+
+              phone.classList.remove(
+                "landscape"
+              );
+
+
+              const device =
+                button.dataset.device;
+
+
+              if (
+                device === "tablet"
+              ) {
+
+                phone.style.width =
+                  "330px";
+
+                phone.style.height =
+                  "520px";
+
+                phone.style.borderRadius =
+                  "30px";
+
+              }
+
+
+              else if (
+                device === "desktop"
+              ) {
+
+                phone.style.width =
+                  "390px";
+
+                phone.style.height =
+                  "260px";
+
+                phone.style.borderRadius =
+                  "18px";
+
+              }
+
+
+              else {
+
+                phone.style.width =
+                  "287px";
+
+                phone.style.height =
+                  "585px";
+
+                phone.style.borderRadius =
+                  "39px";
+
+              }
+
+            }
+          );
+
+        }
+      );
+
+
+    /* ================================
+       THEME
+    ================================= */
+
+    document
+      .getElementById("themeButton")
+      .addEventListener(
+        "click",
+        function() {
+
+          document.body.classList.toggle(
+            "dark-mode"
+          );
+
+        }
+      );
+
+
+    /* ================================
+       DOCUMENTAZIONE
+    ================================= */
+
+    document
+      .getElementById(
+        "documentationButton"
+      )
+      .addEventListener(
+        "click",
+        function() {
+
+          alert(
+            "Web2APK\n\n" +
+            "Trasforma il tuo sito web " +
+            "in un'app Android."
+          );
+
+        }
+      );
+
+
+    /* ================================
+       GUIDA
+    ================================= */
+
+    document
+      .getElementById(
+        "guideButton"
+      )
+      .addEventListener(
+        "click",
+        function() {
+
+          alert(
+            "Come funziona Web2APK:\n\n" +
+            "1. Inserisci il tuo HTML.\n" +
+            "2. Configura l'app.\n" +
+            "3. Controlla l'anteprima.\n" +
+            "4. Genera l'APK."
+          );
+
+        }
+      );
+
+
+    /* ================================
+       TAB EDITOR
+    ================================= */
+
+    document
+      .getElementById("editorTab")
+      .addEventListener(
+        "click",
+        function() {
+
+          document
+            .querySelectorAll(
+              ".tab"
+            )
+            .forEach(
+              function(tab) {
+
+                tab.classList.remove(
+                  "active"
+                );
+
+              }
+            );
+
+
+          this.classList.add(
+            "active"
+          );
+
+        }
+      );
+
+
+    /* ================================
+       TASTO TAB NELL'EDITOR
+    ================================= */
+
+    htmlEditor.addEventListener(
+      "keydown",
+      function(event) {
+
+        if (
+          event.key === "Tab"
+        ) {
+
+          event.preventDefault();
+
+
+          const start =
+            htmlEditor.selectionStart;
+
+          const end =
+            htmlEditor.selectionEnd;
+
+
+          htmlEditor.value =
+            htmlEditor.value.substring(
+              0,
+              start
+            ) +
+            "  " +
+            htmlEditor.value.substring(
+              end
+            );
+
+
+          htmlEditor.selectionStart =
+            start + 2;
+
+
+          htmlEditor.selectionEnd =
+            start + 2;
+
+        }
+
+
+        if (
+          event.ctrlKey &&
+          event.key.toLowerCase() === "s"
+        ) {
+
+          event.preventDefault();
+
+          addConsoleLine(
+            "✓ Progetto salvato localmente.",
+            "console-ok"
+          );
+
+        }
+
+      }
+    );
+
+  </script>
+
+</body>
+</html>
