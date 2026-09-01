@@ -8,28 +8,79 @@ const { execFile } = require("child_process");
 
 const app = express();
 
-const upload = multer({
-  dest: path.join(os.tmpdir(), "web2apk-uploads")
-});
+/* =========================================================
+   CORS
+   Permette al sito GitHub Pages di comunicare con Render
+   ========================================================= */
 
-const PORT = process.env.PORT || 10000;
+app.use((req, res, next) => {
+  res.header(
+    "Access-Control-Allow-Origin",
+    "*"
+  );
+
+  res.header(
+    "Access-Control-Allow-Methods",
+    "GET,POST,OPTIONS"
+  );
+
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept"
+  );
+
+  if (req.method === "OPTIONS") {
+    return res.sendStatus(204);
+  }
+
+  next();
+});
 
 
 /* =========================================================
-   HOME / HEALTH
+   UPLOAD
+   ========================================================= */
+
+const upload = multer({
+  dest: path.join(
+    os.tmpdir(),
+    "web2apk-uploads"
+  )
+});
+
+
+/* =========================================================
+   PORTA
+   ========================================================= */
+
+const PORT =
+  process.env.PORT || 10000;
+
+
+/* =========================================================
+   HOME
    ========================================================= */
 
 app.get("/", (req, res) => {
+
   res.json({
     name: "Web2APK Builder",
     status: "online"
   });
+
 });
 
+
+/* =========================================================
+   HEALTH
+   ========================================================= */
+
 app.get("/health", (req, res) => {
+
   res.json({
     status: "ok"
   });
+
 });
 
 
@@ -42,22 +93,30 @@ app.post(
   upload.single("icon"),
   async (req, res) => {
 
-    const buildId = crypto.randomUUID();
+    const buildId =
+      crypto.randomUUID();
 
     let projectDir = null;
 
     try {
 
+      /* -----------------------------------------------------
+         CONTROLLO HTML
+         ----------------------------------------------------- */
+
       if (!req.body.html) {
+
         return res.status(400).json({
-          error: "Codice HTML mancante."
+          error:
+            "Codice HTML mancante."
         });
+
       }
 
 
       /* -----------------------------------------------------
          DATI APP
-      ----------------------------------------------------- */
+         ----------------------------------------------------- */
 
       const appName =
         req.body.appName?.trim() ||
@@ -95,49 +154,108 @@ app.post(
         req.body.keepScreenOn === "true";
 
 
+      /* -----------------------------------------------------
+         LOG
+         ----------------------------------------------------- */
+
       console.log("");
-      console.log("======================================");
-      console.log("          WEB2APK BUILD");
-      console.log("======================================");
-      console.log("Build ID:", buildId);
-      console.log("App:", appName);
-      console.log("Package:", packageName);
-      console.log("Version:", version);
-      console.log("Version code:", versionCode);
-      console.log("Orientation:", orientation);
-      console.log("Internet:", internet);
-      console.log("JavaScript:", javascript);
-      console.log("Fullscreen:", fullscreen);
-      console.log("External links:", externalLinks);
-      console.log("Keep screen on:", keepScreenOn);
-      console.log("======================================");
+      console.log(
+        "======================================"
+      );
+      console.log(
+        "             WEB2APK BUILD"
+      );
+      console.log(
+        "======================================"
+      );
+
+      console.log(
+        "Build ID:",
+        buildId
+      );
+
+      console.log(
+        "App:",
+        appName
+      );
+
+      console.log(
+        "Package:",
+        packageName
+      );
+
+      console.log(
+        "Version:",
+        version
+      );
+
+      console.log(
+        "Version code:",
+        versionCode
+      );
+
+      console.log(
+        "Orientation:",
+        orientation
+      );
+
+      console.log(
+        "Internet:",
+        internet
+      );
+
+      console.log(
+        "JavaScript:",
+        javascript
+      );
+
+      console.log(
+        "Fullscreen:",
+        fullscreen
+      );
+
+      console.log(
+        "External links:",
+        externalLinks
+      );
+
+      console.log(
+        "Keep screen on:",
+        keepScreenOn
+      );
+
+      console.log(
+        "======================================"
+      );
 
 
       /* -----------------------------------------------------
          VALIDAZIONE PACKAGE NAME
-      ----------------------------------------------------- */
+         ----------------------------------------------------- */
 
       if (
-        !/^[a-zA-Z][a-zA-Z0-9]*(\.[a-zA-Z][a-zA-Z0-9_]*)+$/.test(
-          packageName
-        )
+        !/^[a-zA-Z][a-zA-Z0-9]*(\.[a-zA-Z][a-zA-Z0-9_]*)+$/
+          .test(packageName)
       ) {
 
         return res.status(400).json({
           error:
             "Package name non valido. Esempio: com.web2apk.miaapp"
         });
+
       }
 
 
       /* -----------------------------------------------------
          CARTELLA TEMPORANEA
-      ----------------------------------------------------- */
+         ----------------------------------------------------- */
 
-      projectDir = path.join(
-        os.tmpdir(),
-        `web2apk-${buildId}`
-      );
+      projectDir =
+        path.join(
+          os.tmpdir(),
+          `web2apk-${buildId}`
+        );
+
 
       fs.mkdirSync(
         projectDir,
@@ -149,12 +267,14 @@ app.post(
 
       /* -----------------------------------------------------
          CARTELLA WEB
-      ----------------------------------------------------- */
+         ----------------------------------------------------- */
 
-      const wwwDir = path.join(
-        projectDir,
-        "www"
-      );
+      const wwwDir =
+        path.join(
+          projectDir,
+          "www"
+        );
+
 
       fs.mkdirSync(
         wwwDir,
@@ -166,7 +286,7 @@ app.post(
 
       /* -----------------------------------------------------
          HTML
-      ----------------------------------------------------- */
+         ----------------------------------------------------- */
 
       fs.writeFileSync(
         path.join(
@@ -177,6 +297,7 @@ app.post(
         "utf8"
       );
 
+
       console.log(
         "[WEB] HTML copiato."
       );
@@ -184,14 +305,24 @@ app.post(
 
       /* -----------------------------------------------------
          CONFIGURAZIONE CAPACITOR
-      ----------------------------------------------------- */
+         ----------------------------------------------------- */
 
       const capacitorConfig = {
-        appId: packageName,
-        appName: appName,
-        webDir: "www",
-        bundledWebRuntime: false
+
+        appId:
+          packageName,
+
+        appName:
+          appName,
+
+        webDir:
+          "www",
+
+        bundledWebRuntime:
+          false
+
       };
+
 
       fs.writeFileSync(
         path.join(
@@ -206,24 +337,39 @@ app.post(
         "utf8"
       );
 
+
       console.log(
         "[CAPACITOR] Configurazione creata."
       );
 
 
       /* -----------------------------------------------------
-         PACKAGE JSON DEL PROGETTO GENERATO
-      ----------------------------------------------------- */
+         PACKAGE JSON DEL PROGETTO
+         ----------------------------------------------------- */
 
       const generatedPackage = {
-        name: "web2apk-generated-app",
-        version: "1.0.0",
-        private: true,
+
+        name:
+          "web2apk-generated-app",
+
+        version:
+          "1.0.0",
+
+        private:
+          true,
+
         dependencies: {
-          "@capacitor/android": "^7.4.3",
-          "@capacitor/core": "^7.4.3"
+
+          "@capacitor/android":
+            "^7.4.3",
+
+          "@capacitor/core":
+            "^7.4.3"
+
         }
+
       };
+
 
       fs.writeFileSync(
         path.join(
@@ -246,7 +392,7 @@ app.post(
 
       /* -----------------------------------------------------
          NPM INSTALL
-      ----------------------------------------------------- */
+         ----------------------------------------------------- */
 
       const npmInstall =
         await runCommand(
@@ -260,12 +406,15 @@ app.post(
         );
 
 
-      if (!npmInstall.success) {
+      if (
+        !npmInstall.success
+      ) {
 
         throw new Error(
           "Installazione dipendenze fallita.\n\n" +
           npmInstall.output
         );
+
       }
 
 
@@ -275,8 +424,8 @@ app.post(
 
 
       /* -----------------------------------------------------
-         CAPACITOR CLI
-      ----------------------------------------------------- */
+         CAPACITOR ADD ANDROID
+         ----------------------------------------------------- */
 
       console.log(
         "[CAPACITOR] Creazione progetto Android..."
@@ -295,12 +444,15 @@ app.post(
         );
 
 
-      if (!capAdd.success) {
+      if (
+        !capAdd.success
+      ) {
 
         throw new Error(
           "Creazione progetto Android fallita.\n\n" +
           capAdd.output
         );
+
       }
 
 
@@ -310,8 +462,8 @@ app.post(
 
 
       /* -----------------------------------------------------
-         COPIA WEB
-      ----------------------------------------------------- */
+         CAPACITOR COPY
+         ----------------------------------------------------- */
 
       console.log(
         "[CAPACITOR] Copia dei file web..."
@@ -330,12 +482,15 @@ app.post(
         );
 
 
-      if (!capCopy.success) {
+      if (
+        !capCopy.success
+      ) {
 
         throw new Error(
           "Copia dei file web fallita.\n\n" +
           capCopy.output
         );
+
       }
 
 
@@ -346,7 +501,7 @@ app.post(
 
       /* -----------------------------------------------------
          CONFIGURAZIONE ANDROID
-      ----------------------------------------------------- */
+         ----------------------------------------------------- */
 
       await configureAndroid(
         projectDir,
@@ -366,28 +521,33 @@ app.post(
 
       /* -----------------------------------------------------
          ICONA
-      ----------------------------------------------------- */
+         ----------------------------------------------------- */
 
-      if (req.file) {
+      if (
+        req.file
+      ) {
 
         console.log(
           "[ICONA] Installazione icona..."
         );
+
 
         await installIcon(
           projectDir,
           req.file.path
         );
 
+
         console.log(
           "[ICONA] Icona installata."
         );
+
       }
 
 
       /* -----------------------------------------------------
-         GRADLE
-      ----------------------------------------------------- */
+         CARTELLA ANDROID
+         ----------------------------------------------------- */
 
       const androidDir =
         path.join(
@@ -412,6 +572,7 @@ app.post(
         throw new Error(
           "Gradle wrapper non trovato."
         );
+
       }
 
 
@@ -425,12 +586,16 @@ app.post(
       } catch {}
 
 
+      /* -----------------------------------------------------
+         GRADLE BUILD
+         ----------------------------------------------------- */
+
       console.log("");
       console.log(
         "======================================"
       );
       console.log(
-        "       AVVIO BUILD GRADLE"
+        "          AVVIO BUILD GRADLE"
       );
       console.log(
         "======================================"
@@ -449,12 +614,15 @@ app.post(
         );
 
 
-      if (!gradle.success) {
+      if (
+        !gradle.success
+      ) {
 
         throw new Error(
           "Build Gradle fallita.\n\n" +
           gradle.output
         );
+
       }
 
 
@@ -473,7 +641,7 @@ app.post(
 
       /* -----------------------------------------------------
          CERCA APK
-      ----------------------------------------------------- */
+         ----------------------------------------------------- */
 
       const apkPath =
         findApk(
@@ -481,11 +649,14 @@ app.post(
         );
 
 
-      if (!apkPath) {
+      if (
+        !apkPath
+      ) {
 
         throw new Error(
           "Gradle ha terminato senza produrre un APK."
         );
+
       }
 
 
@@ -496,8 +667,8 @@ app.post(
 
 
       /* -----------------------------------------------------
-         VERIFICA APK
-      ----------------------------------------------------- */
+         LETTURA APK
+         ----------------------------------------------------- */
 
       const apkBuffer =
         fs.readFileSync(
@@ -505,13 +676,20 @@ app.post(
         );
 
 
+      /* -----------------------------------------------------
+         CONTROLLO APK
+         ----------------------------------------------------- */
+
       if (
-        !isZip(apkBuffer)
+        !isZip(
+          apkBuffer
+        )
       ) {
 
         throw new Error(
-          "Il file prodotto non è un APK valido."
+          "Il file prodotto non è un APK Android valido."
         );
+
       }
 
 
@@ -522,6 +700,7 @@ app.post(
         throw new Error(
           "L'APK prodotto è troppo piccolo e non sembra valido."
         );
+
       }
 
 
@@ -538,24 +717,31 @@ app.post(
 
 
       /* -----------------------------------------------------
-         RISPOSTA
-      ----------------------------------------------------- */
+         NOME APK
+         ----------------------------------------------------- */
 
       const filename =
         `${safeFileName(appName)}-${version}.apk`;
 
 
+      /* -----------------------------------------------------
+         RISPOSTA
+         ----------------------------------------------------- */
+
       res.status(200);
+
 
       res.setHeader(
         "Content-Type",
         "application/vnd.android.package-archive"
       );
 
+
       res.setHeader(
         "Content-Disposition",
         `attachment; filename="${filename}"`
       );
+
 
       res.setHeader(
         "Content-Length",
@@ -573,7 +759,9 @@ app.post(
       );
 
 
-    } catch (error) {
+    } catch (
+      error
+    ) {
 
       console.error("");
       console.error(
@@ -585,31 +773,37 @@ app.post(
       console.error(
         "======================================"
       );
+
       console.error(
         error.message
       );
 
 
-      if (!res.headersSent) {
+      if (
+        !res.headersSent
+      ) {
 
         res.status(500).json({
+
           error:
             error.message ||
             "Errore durante la compilazione."
+
         });
 
       }
 
-
     } finally {
 
       /* -----------------------------------------------------
-         PULIZIA
-      ----------------------------------------------------- */
+         PULIZIA PROGETTO
+         ----------------------------------------------------- */
 
       if (
         projectDir &&
-        fs.existsSync(projectDir)
+        fs.existsSync(
+          projectDir
+        )
       ) {
 
         try {
@@ -623,8 +817,13 @@ app.post(
           );
 
         } catch {}
+
       }
 
+
+      /* -----------------------------------------------------
+         PULIZIA UPLOAD ICONA
+         ----------------------------------------------------- */
 
       if (
         req.file &&
@@ -640,8 +839,11 @@ app.post(
           );
 
         } catch {}
+
       }
+
     }
+
   }
 );
 
@@ -684,6 +886,10 @@ async function configureAndroid(
     );
 
 
+  /* -------------------------------------------------------
+     MANIFEST
+     ------------------------------------------------------- */
+
   if (
     fs.existsSync(
       manifestPath
@@ -699,30 +905,36 @@ async function configureAndroid(
 
     /* -----------------------------------------------------
        INTERNET
-    ----------------------------------------------------- */
+       ----------------------------------------------------- */
 
     if (
-      settings.internet
+      settings.internet &&
+      !manifest.includes(
+        "android.permission.INTERNET"
+      )
     ) {
 
-      if (
-        !manifest.includes(
-          "android.permission.INTERNET"
-        )
-      ) {
+      manifest =
+        manifest.replace(
+          "<manifest",
+          `<manifest`
+        );
 
-        manifest =
-          manifest.replace(
-            "<manifest",
-            `<manifest\n    <uses-permission android:name="android.permission.INTERNET" />`
-          );
-      }
+
+      manifest =
+        manifest.replace(
+          ">",
+          `>
+
+    <uses-permission
+        android:name="android.permission.INTERNET" />`
+        );
     }
 
 
     /* -----------------------------------------------------
        ORIENTAMENTO
-    ----------------------------------------------------- */
+       ----------------------------------------------------- */
 
     const orientationValue =
       settings.orientation ===
@@ -731,26 +943,18 @@ async function configureAndroid(
         : "portrait";
 
 
-    manifest =
-      manifest.replace(
-        /<activity([^>]*)android:screenOrientation="[^"]*"/,
-        `<activity$1android:screenOrientation="${orientationValue}"`
-      );
-
-
-    /* -----------------------------------------------------
-       FULLSCREEN
-    ----------------------------------------------------- */
-
     if (
-      settings.fullscreen
+      manifest.includes(
+        "android:screenOrientation="
+      )
     ) {
 
       manifest =
         manifest.replace(
-          /<application([^>]*)>/,
-          `<application$1 android:theme="@style/AppTheme">`
+          /android:screenOrientation="[^"]*"/,
+          `android:screenOrientation="${orientationValue}"`
         );
+
     }
 
 
@@ -759,18 +963,20 @@ async function configureAndroid(
       manifest,
       "utf8"
     );
+
   }
 
 
   /* -------------------------------------------------------
-     VERSIONE APP
-  ------------------------------------------------------- */
+     BUILD GRADLE
+     ------------------------------------------------------- */
 
   const buildGradlePath =
     path.join(
       appDir,
       "build.gradle"
     );
+
 
   const buildGradleKtsPath =
     path.join(
@@ -779,7 +985,8 @@ async function configureAndroid(
     );
 
 
-  let gradlePath = null;
+  let gradlePath =
+    null;
 
 
   if (
@@ -799,6 +1006,7 @@ async function configureAndroid(
 
     gradlePath =
       buildGradleKtsPath;
+
   }
 
 
@@ -822,13 +1030,23 @@ async function configureAndroid(
       gradle =
         gradle.replace(
           /versionCode\s+\d+/,
-          `versionCode ${parseInt(settings.versionCode, 10) || 1}`
+          `versionCode ${
+            parseInt(
+              settings.versionCode,
+              10
+            ) || 1
+          }`
         );
+
 
       gradle =
         gradle.replace(
           /versionName\s+"[^"]*"/,
-          `versionName "${escapeGradle(settings.version)}"`
+          `versionName "${
+            escapeGradle(
+              settings.version
+            )
+          }"`
         );
 
     } else {
@@ -836,14 +1054,25 @@ async function configureAndroid(
       gradle =
         gradle.replace(
           /versionCode\s*=\s*\d+/,
-          `versionCode = ${parseInt(settings.versionCode, 10) || 1}`
+          `versionCode = ${
+            parseInt(
+              settings.versionCode,
+              10
+            ) || 1
+          }`
         );
+
 
       gradle =
         gradle.replace(
           /versionName\s*=\s*"[^"]*"/,
-          `versionName = "${escapeGradle(settings.version)}"`
+          `versionName = "${
+            escapeGradle(
+              settings.version
+            )
+          }"`
         );
+
     }
 
 
@@ -852,7 +1081,9 @@ async function configureAndroid(
       gradle,
       "utf8"
     );
+
   }
+
 }
 
 
@@ -881,16 +1112,20 @@ async function installIcon(
       androidRes
     )
   ) {
+
     return;
+
   }
 
 
   const folders = [
+
     "mipmap-mdpi",
     "mipmap-hdpi",
     "mipmap-xhdpi",
     "mipmap-xxhdpi",
     "mipmap-xxxhdpi"
+
   ];
 
 
@@ -917,6 +1152,7 @@ async function installIcon(
           recursive: true
         }
       );
+
     }
 
 
@@ -931,7 +1167,9 @@ async function installIcon(
       sourcePath,
       destination
     );
+
   }
+
 }
 
 
@@ -958,12 +1196,16 @@ function runCommand(
         args,
         {
           cwd,
+
           env: {
             ...process.env
           },
+
           maxBuffer:
             50 * 1024 * 1024
+
         },
+
         (
           error,
           stdout,
@@ -979,33 +1221,50 @@ function runCommand(
               .trim();
 
 
-          if (output) {
+          if (
+            output
+          ) {
 
             console.log(
               output
             );
+
           }
 
 
-          if (error) {
+          if (
+            error
+          ) {
 
             resolve({
-              success: false,
+
+              success:
+                false,
+
               output
+
             });
 
             return;
+
           }
 
 
           resolve({
-            success: true,
+
+            success:
+              true,
+
             output
+
           });
+
         }
       );
+
     }
   );
+
 }
 
 
@@ -1017,15 +1276,20 @@ function findApk(
   directory
 ) {
 
-  let result = null;
+  let result =
+    null;
 
 
   function scan(
     current
   ) {
 
-    if (result) {
+    if (
+      result
+    ) {
+
       return;
+
     }
 
 
@@ -1034,7 +1298,9 @@ function findApk(
         current
       )
     ) {
+
       return;
+
     }
 
 
@@ -1042,7 +1308,8 @@ function findApk(
       fs.readdirSync(
         current,
         {
-          withFileTypes: true
+          withFileTypes:
+            true
         }
       );
 
@@ -1077,8 +1344,11 @@ function findApk(
           full;
 
         return;
+
       }
+
     }
+
   }
 
 
@@ -1092,7 +1362,7 @@ function findApk(
 
 
 /* =========================================================
-   VERIFICA ZIP / APK
+   VERIFICA ZIP/APK
    ========================================================= */
 
 function isZip(
@@ -1103,30 +1373,41 @@ function isZip(
     !buffer ||
     buffer.length < 4
   ) {
+
     return false;
+
   }
 
 
   return (
+
     (
       buffer[0] === 0x50 &&
       buffer[1] === 0x4b &&
       buffer[2] === 0x03 &&
       buffer[3] === 0x04
-    ) ||
+    )
+
+    ||
+
     (
       buffer[0] === 0x50 &&
       buffer[1] === 0x4b &&
       buffer[2] === 0x05 &&
       buffer[3] === 0x06
-    ) ||
+    )
+
+    ||
+
     (
       buffer[0] === 0x50 &&
       buffer[1] === 0x4b &&
       buffer[2] === 0x07 &&
       buffer[3] === 0x08
     )
+
   );
+
 }
 
 
@@ -1138,13 +1419,16 @@ function safeFileName(
   name
 ) {
 
-  return String(name)
+  return String(
+    name
+  )
     .trim()
     .replace(
       /[^a-zA-Z0-9_-]/g,
       "_"
     ) ||
     "Web2APK";
+
 }
 
 
@@ -1156,7 +1440,9 @@ function escapeGradle(
   value
 ) {
 
-  return String(value)
+  return String(
+    value
+  )
     .replace(
       /\\/g,
       "\\\\"
@@ -1165,6 +1451,7 @@ function escapeGradle(
       /"/g,
       '\\"'
     );
+
 }
 
 
@@ -1194,7 +1481,11 @@ app.listen(
       "API: POST /api/build"
     );
     console.log(
+      "CORS: ENABLED"
+    );
+    console.log(
       "======================================"
     );
+
   }
 );
