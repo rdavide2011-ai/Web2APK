@@ -1,0 +1,14 @@
+{
+  "name": "web2apk-backend",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Web2APK Android builder",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^5.1.0",
+    "multer": "^2.0.2"
+  }
+}
