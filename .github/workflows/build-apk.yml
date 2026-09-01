@@ -1,0 +1,75 @@
+name: Build Web2APK
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-apk:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Scarica repository
+        uses: actions/checkout@v4
+
+      - name: Configura Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Configura Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Configura Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Installa Capacitor
+        run: |
+          npm init -y
+          npm install @capacitor/core@7.4.3 @capacitor/android@7.4.3 @capacitor/cli@7.4.3
+
+      - name: Prepara progetto Web
+        run: |
+          mkdir -p www
+
+          if [ -f index.html ]; then
+            cp index.html www/index.html
+          else
+            echo "index.html non trovato"
+            exit 1
+          fi
+
+      - name: Crea configurazione Capacitor
+        run: |
+          cat > capacitor.config.json <<'EOF'
+          {
+            "appId": "com.web2apk.miaapp",
+            "appName": "Web2APK",
+            "webDir": "www",
+            "bundledWebRuntime": false
+          }
+          EOF
+
+      - name: Crea progetto Android
+        run: |
+          npx cap add android
+
+      - name: Copia file Web
+        run: |
+          npx cap copy android
+
+      - name: Compila APK
+        run: |
+          cd android
+          chmod +x gradlew
+          ./gradlew assembleDebug --no-daemon
+
+      - name: Salva APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: Web2APK
+          path: android/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
